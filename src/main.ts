@@ -1,6 +1,8 @@
 import http from "http";
 import { parse } from "url";
 import express from "express";
+import { type } from "os";
+import { v4 } from "uuid";
 
 interface Plan {
   id: number;
@@ -10,6 +12,18 @@ interface Plan {
 
 const plans: Plan[] = [];
 
+type UserRole = "Admin" | "Resresentative" | "Normal";
+interface User {
+  id: string;
+  username: string;
+  password: string;
+  role: UserRole;
+}
+
+const users: User[] = [
+  { id: v4(), username: "admin", password: "admin", role: "Admin" },
+];
+
 const app = express();
 
 app.use(express.json());
@@ -18,7 +32,41 @@ app.use((req, res, next) => {
   next();
 });
 
+app.post("/login", (req, res) => {
+  const { username, password } = req.body;
+  if (
+    username === undefined ||
+    typeof username !== "string" ||
+    (typeof username === "string" && username.length === 0)
+  ) {
+    res
+      .status(400)
+      .send({ message: "username should be string and non empty" });
+    return;
+  }
+
+  const user = users.find(
+    (x) => x.username === username && x.password === password
+  );
+
+  if (user === undefined) {
+    res.status(401).send({ message: "invalid user or password" });
+    return;
+  }
+
+  res.status(200).send(user);
+  return;
+});
+
 app.post("/plan", (req, res) => {
+  const userId = req.headers["authorization"];
+
+  const loggedInUser = users.find((x) => x.id === userId);
+  if (!loggedInUser) {
+    res.status(401).send({ message: "Unauthorized" });
+    return;
+  }
+
   const { title, description } = req.body;
   if (
     title === undefined ||
