@@ -5,6 +5,7 @@ import { type } from "os";
 import { v4 } from "uuid";
 import { planRouter } from "./routes/plan.route";
 import { userRouter } from "./routes/user.route";
+import { programRouter } from "./routes/program.route";
 
 export const app = express();
 
@@ -17,6 +18,7 @@ app.use((req, res, next) => {
 
 app.use("/plan", planRouter);
 app.use(userRouter);
+app.use("/program", programRouter);
 
 app.use((req, res) => {
   res.status(404).send({ message: "Not Found KaKA" });
