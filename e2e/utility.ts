@@ -9,3 +9,12 @@ export const loginAdminTest = async () => {
 
   return user;
 };
+
+export const loginRepesentorTest = async () => {
+  const { body: user } = await request(app)
+    .post("/login")
+    .send({ username: "rep", password: "rep" })
+    .expect(200);
+
+  return user;
+};

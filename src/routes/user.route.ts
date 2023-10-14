@@ -1,8 +1,10 @@
 import { Router } from "express";
 import { v4 } from "uuid";
 import { isNonEmptyString } from "../utility/non-empty-string";
-type UserRole = "Admin" | "Resresentative" | "Normal";
-interface User {
+import { HttpError } from "../utility/my-error";
+import { handleExpress } from "../utility/handle-express";
+type UserRole = "Admin" | "Representative" | "Normal";
+export interface User {
   id: string;
   username: string;
   password: string;
@@ -13,6 +15,7 @@ const app = Router();
 
 export const users: User[] = [
   { id: v4(), username: "admin", password: "admin", role: "Admin" },
+  { id: v4(), username: "rep", password: "rep", role: "Representative" },
 ];
 
 app.post("/login", (req, res) => {
@@ -24,17 +27,18 @@ app.post("/login", (req, res) => {
     return;
   }
 
-  const user = users.find(
-    (x) => x.username === username && x.password === password
-  );
-
-  if (user === undefined) {
-    res.status(401).send({ message: "invalid user or password" });
-    return;
-  }
-
-  res.status(200).send(user);
-  return;
+  handleExpress(res, () => login({ username, password }));
 });
+
+const login = (dto: { username: string; password: string }) => {
+  const user = users.find(
+    (userItem) =>
+      userItem.username === dto.username && userItem.password === dto.password
+  );
+  if (user === undefined) {
+    throw new HttpError(400, "user not found");
+  }
+  return user;
+};
 
 export { app as userRouter };

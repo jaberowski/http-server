@@ -1,14 +1,20 @@
-import { Router } from "express";
-import { users } from "./user.route";
+import { Response, Router } from "express";
+import { User, users } from "./user.route";
 import { isNonEmptyString } from "../utility/non-empty-string";
-interface Plan {
+import { HttpError } from "../utility/my-error";
+import { handleExpress } from "../utility/handle-express";
+import { createPlan } from "../plan/create-plan";
+import { getPlanById } from "../plan/get-plan-by-id";
+import { createPlanDto } from "../plan/dto/create-plan.dto";
+import { ZodError, z } from "zod";
+export interface Plan {
   id: number;
   title: string;
   description: string;
   deadLine: Date;
 }
 
-const plans: Plan[] = [];
+export const plans: Plan[] = [];
 
 export const app = Router();
 
@@ -21,53 +27,25 @@ app.post("", (req, res) => {
     return;
   }
 
-  const { title, description, deadLine } = req.body;
-  if (!isNonEmptyString(title)) {
-    res.status(400).send({ message: "title should be string and none empty" });
-    return;
+  try {
+    const dto = createPlanDto.parse(req.body);
+    handleExpress(res, () => createPlan(dto, loggedInUser));
+  } catch (e) {
+    if (e instanceof ZodError) {
+      res.status(400).send({ message: e.errors });
+    }
   }
-
-  if (deadLine === undefined) {
-    res.status(400).send({ message: "deadline should be provided" });
-    return;
-  }
-
-  const deadLineTime = new Date(deadLine);
-  if (isNaN(deadLineTime.getTime())) {
-    res.status(400).send({ message: "deadline should be provided" });
-    return;
-  }
-  const plan = {
-    id: plans.length + 1,
-    title,
-    description: description || "",
-    deadLine: deadLineTime,
-  };
-
-  plans.push(plan);
-
-  res.status(200).send(plan);
-  return;
 });
 
 app.get("/:id", (req, res) => {
-  const id = parseInt(req.params.id);
-  if (isNaN(id)) {
-    res.status(400).send({ message: "Id should be a number" });
-    return;
+  try {
+    const id = z.coerce.number().parse(req.params.id);
+    handleExpress(res, () => getPlanById(id));
+  } catch (e) {
+    if (e instanceof ZodError) {
+      res.status(400).send({ message: e.errors });
+    }
   }
-
-  const plan = plans.find((planItem) => {
-    return id === planItem.id;
-  });
-
-  if (plan === undefined) {
-    res.status(404).send({ message: "Plan Not Found" });
-    return;
-  }
-
-  res.status(200).send(plan);
-  return;
 });
 
 export { app as planRouter };
