@@ -1,31 +1,28 @@
 import { Response, Router } from "express";
 import { User, users } from "./user.route";
 import { isNonEmptyString } from "../utility/non-empty-string";
-import { HttpError } from "../utility/my-error";
+import { HttpError } from "../utility/http-error";
 import { handleExpress } from "../utility/handle-express";
-import { createPlan } from "../plan/create-plan";
-import { getPlanById } from "../plan/get-plan-by-id";
-import { createPlanDto } from "../plan/dto/create-plan.dto";
+import { createPlan } from "../modules/plan/create-plan";
+import { getPlanById } from "../modules/plan/get-plan-by-id";
+import { createPlanDto } from "../modules/plan/dto/create-plan.dto";
 import { ZodError, z } from "zod";
+import { Program } from "./program.route";
+import { loginMiddleWare } from "../login.middleware";
 export interface Plan {
   id: number;
   title: string;
   description: string;
   deadLine: Date;
+  programs: Program[];
 }
 
 export const plans: Plan[] = [];
 
 export const app = Router();
 
-app.post("", (req, res) => {
-  const userId = req.headers["authorization"];
-
-  const loggedInUser = users.find((x) => x.id === userId);
-  if (!loggedInUser) {
-    res.status(401).send({ message: "Unauthorized" });
-    return;
-  }
+app.post("", loginMiddleWare, (req, res) => {
+  const loggedInUser = req.user;
   if (loggedInUser.role !== "Admin") {
     res.status(403).send({ message: "not admin" });
   }

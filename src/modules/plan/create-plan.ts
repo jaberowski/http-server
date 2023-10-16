@@ -1,6 +1,6 @@
-import { Plan, plans } from "../routes/plan.route";
-import { User } from "../routes/user.route";
-import { HttpError } from "../utility/my-error";
+import { Plan, plans } from "../../routes/plan.route";
+import { User } from "../../routes/user.route";
+import { HttpError } from "../../utility/http-error";
 
 export const createPlan = (
   dto: {
@@ -15,6 +15,7 @@ export const createPlan = (
     title: dto.title,
     description: dto.description || "",
     deadLine: dto.deadLine,
+    programs: [],
   };
 
   if (dto.deadLine.getTime() < new Date().getTime()) {

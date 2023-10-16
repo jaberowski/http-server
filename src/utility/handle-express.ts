@@ -1,4 +1,4 @@
-import { HttpError } from "./my-error";
+import { HttpError } from "./http-error";
 import { Response } from "express";
 
 export const handleExpress = <A>(res: Response, fn: () => A) => {

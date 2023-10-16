@@ -1,30 +1,34 @@
 import { Router } from "express";
 import { users } from "./user.route";
 import { isNonEmptyString } from "../utility/non-empty-string";
+import { createProgramDto } from "../modules/program/dto/create-program.dto";
+import { ZodError } from "zod";
+import { handleExpress } from "../utility/handle-express";
+import { createProgram } from "../modules/program/create-program";
+import { loginMiddleWare } from "../login.middleware";
 
-interface Program {
+export interface Program {
   planId: number;
   title: string;
-  description: string;
+  description?: string;
   id: number;
+  userId: string;
 }
 
 const app = Router();
 
-app.post("/", (req, res) => {
+app.post("/", loginMiddleWare, (req, res) => {
   const userId = req.headers["authorization"];
 
-  const loggedInUser = users.find((x) => x.id === userId);
-  if (!loggedInUser) {
-    res.status(401).send({ message: "Unauthorized" });
-    return;
-  }
+  const loggedInUser = req.user;
 
-  const { title, description, planId } = req.body;
-
-  if (!isNonEmptyString(title)) {
-    res.status(400).send({ message: "title should be a string and non empty" });
-    return;
+  try {
+    const dto = createProgramDto.parse(req.body);
+    handleExpress(res, () => createProgram(dto, loggedInUser));
+  } catch (e) {
+    if (e instanceof ZodError) {
+      res.status(400).send({ message: e.errors });
+    }
   }
 });
 
