@@ -1,8 +1,4 @@
-import http from "http";
-import { parse } from "url";
 import express from "express";
-import { type } from "os";
-import { v4 } from "uuid";
 import { planRouter } from "./routes/plan.route";
 import { userRouter } from "./routes/user.route";
 import { programRouter } from "./routes/program.route";

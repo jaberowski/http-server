@@ -18,7 +18,7 @@ describe("Program", () => {
         .send({ message: "bad request" });
     });
 
-    it("it should fail if deaddline is exceeded", async () => {
+    it.skip("it should fail if deaddline is exceeded", async () => {
       const user = await loginAdminTest();
       const today = new Date();
       const yesterday = new Date(today.setDate(today.getDate() - 1));

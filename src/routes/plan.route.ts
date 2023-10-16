@@ -26,6 +26,9 @@ app.post("", (req, res) => {
     res.status(401).send({ message: "Unauthorized" });
     return;
   }
+  if (loggedInUser.role !== "Admin") {
+    res.status(403).send({ message: "not admin" });
+  }
 
   try {
     const dto = createPlanDto.parse(req.body);
@@ -42,6 +45,7 @@ app.get("/:id", (req, res) => {
     const id = z.coerce.number().parse(req.params.id);
     handleExpress(res, () => getPlanById(id));
   } catch (e) {
+    console.log(e);
     if (e instanceof ZodError) {
       res.status(400).send({ message: e.errors });
     }

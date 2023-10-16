@@ -23,5 +23,6 @@ export const createPlan = (
   if (loggedInUser.role !== "Admin") {
     throw new HttpError(403, "you are not authorized");
   }
+  plans.push(plan);
   return plan;
 };

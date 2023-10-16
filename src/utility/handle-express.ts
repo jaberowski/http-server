@@ -4,7 +4,8 @@ import { Response } from "express";
 export const handleExpress = <A>(res: Response, fn: () => A) => {
   try {
     const data = fn();
-    return data;
+    res.status(200).send(data);
+    return;
   } catch (e) {
     if (e instanceof HttpError) {
       res.status(e.status).send({ message: e.message });
