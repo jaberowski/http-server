@@ -4,14 +4,7 @@ import { ZodError } from "zod";
 import { handleExpress } from "../utility/handle-express";
 import { createProgram } from "../modules/program/create-program";
 import { loginMiddleWare } from "../login.middleware";
-
-export interface Program {
-  planId: number;
-  title: string;
-  description?: string;
-  id: number;
-  userId: string;
-}
+import { planRepository } from "../dependency";
 
 const app = Router();
 
@@ -20,7 +13,7 @@ app.post("/", loginMiddleWare, (req, res) => {
 
   try {
     const dto = createProgramDto.parse(req.body);
-    handleExpress(res, () => createProgram(dto, loggedInUser));
+    handleExpress(res, () => createProgram(dto, loggedInUser, planRepository));
   } catch (e) {
     if (e instanceof ZodError) {
       res.status(400).send({ message: e.errors });

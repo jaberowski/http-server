@@ -1,12 +1,18 @@
 import { loginAdminTest, loginRepesentorTest } from "../../../e2e/utility";
 import { ForbiddenError } from "../../utility/http-error";
-import { canCreateProgram, createProgram } from "./create-program";
+import { PlanService } from "./plan.service";
 
 describe("unit test", () => {
+  let planService: PlanService;
+
+  beforeEach(() => {
+    planService = new PlanService();
+  });
+
   it("it should not create program if user is not reprens", async () => {
     const user = await loginAdminTest();
     expect(() =>
-      canCreateProgram(user, {
+      planService.canCreateProgram(user, {
         id: 1,
         title: "jds",
         programs: [],
@@ -18,7 +24,7 @@ describe("unit test", () => {
   it("should not create program if user already have a program", async () => {
     const user = await loginRepesentorTest();
     expect(
-      canCreateProgram(user, {
+      planService.canCreateProgram(user, {
         id: 1,
         title: "oromie",
         programs: [
@@ -41,7 +47,7 @@ describe("unit test", () => {
     const today = new Date();
     const yesterday = new Date(today.setDate(today.getDate() - 1));
     expect(
-      canCreateProgram(user, {
+      planService.canCreateProgram(user, {
         id: 1,
         title: "oromie",
         programs: [],
@@ -55,7 +61,7 @@ describe("unit test", () => {
     const today = new Date();
     const tomorow = new Date(today.setDate(today.getDate() + 1));
     expect(
-      canCreateProgram(user, {
+      planService.canCreateProgram(user, {
         id: 1,
         title: "oromie",
         programs: [],

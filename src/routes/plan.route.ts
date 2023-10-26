@@ -1,18 +1,11 @@
 import { Router } from "express";
 import { handleExpress } from "../utility/handle-express";
-import { createPlan } from "../modules/plan/create-plan";
-import { getPlanById } from "../modules/plan/get-plan-by-id";
 import { createPlanDto } from "../modules/plan/dto/create-plan.dto";
 import { ZodError, z } from "zod";
-import { Program } from "./program.route";
 import { loginMiddleWare } from "../login.middleware";
-export interface Plan {
-  id: number;
-  title: string;
-  description: string;
-  deadLine: Date;
-  programs: Program[];
-}
+import { Plan } from "../modules/plan/model/plan";
+import { planService } from "../dependency";
+import { createProgramDto } from "../modules/plan/program/dto/create-program.dto";
 
 export const plans: Plan[] = [];
 
@@ -27,7 +20,20 @@ app.post("", loginMiddleWare, (req, res) => {
 
   try {
     const dto = createPlanDto.parse(req.body);
-    handleExpress(res, () => createPlan(dto, loggedInUser));
+    handleExpress(res, () => planService.createPlan(dto, loggedInUser));
+  } catch (e) {
+    if (e instanceof ZodError) {
+      res.status(400).send({ message: e.errors });
+    }
+  }
+});
+
+app.post("/:id/program", loginMiddleWare, (req, res) => {
+  const loggedInUser = req.user;
+
+  try {
+    const dto = createProgramDto.parse({ ...req.body, planId: req.params.id });
+    handleExpress(res, () => planService.createProgram(dto, loggedInUser));
   } catch (e) {
     if (e instanceof ZodError) {
       res.status(400).send({ message: e.errors });
@@ -38,7 +44,7 @@ app.post("", loginMiddleWare, (req, res) => {
 app.get("/:id", (req, res) => {
   try {
     const id = z.coerce.number().parse(req.params.id);
-    handleExpress(res, () => getPlanById(id));
+    handleExpress(res, () => planService.getPlanById(id));
   } catch (e) {
     if (e instanceof ZodError) {
       res.status(400).send({ message: e.errors });
