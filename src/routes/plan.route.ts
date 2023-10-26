@@ -1,7 +1,4 @@
-import { Response, Router } from "express";
-import { User, users } from "./user.route";
-import { isNonEmptyString } from "../utility/non-empty-string";
-import { HttpError } from "../utility/http-error";
+import { Router } from "express";
 import { handleExpress } from "../utility/handle-express";
 import { createPlan } from "../modules/plan/create-plan";
 import { getPlanById } from "../modules/plan/get-plan-by-id";
@@ -25,6 +22,7 @@ app.post("", loginMiddleWare, (req, res) => {
   const loggedInUser = req.user;
   if (loggedInUser.role !== "Admin") {
     res.status(403).send({ message: "not admin" });
+    return;
   }
 
   try {
@@ -42,7 +40,6 @@ app.get("/:id", (req, res) => {
     const id = z.coerce.number().parse(req.params.id);
     handleExpress(res, () => getPlanById(id));
   } catch (e) {
-    console.log(e);
     if (e instanceof ZodError) {
       res.status(400).send({ message: e.errors });
     }

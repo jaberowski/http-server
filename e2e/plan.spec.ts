@@ -1,5 +1,4 @@
 import request from "supertest";
-import { response } from "express";
 import { app } from "../src/api";
 import { loginAdminTest, loginRepesentorTest } from "./utility";
 
@@ -24,7 +23,7 @@ describe("Plan", () => {
       await request(app).post("/plan").expect(401);
     });
 
-    it("should fail is user is not admin", async () => {
+    it("should fail if user is not admin", async () => {
       const user = await loginRepesentorTest();
       const today = new Date();
       const tomorow = new Date(today.setDate(today.getDate() + 1));

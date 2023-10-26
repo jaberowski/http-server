@@ -1,6 +1,4 @@
 import { Router } from "express";
-import { users } from "./user.route";
-import { isNonEmptyString } from "../utility/non-empty-string";
 import { createProgramDto } from "../modules/program/dto/create-program.dto";
 import { ZodError } from "zod";
 import { handleExpress } from "../utility/handle-express";
@@ -18,8 +16,6 @@ export interface Program {
 const app = Router();
 
 app.post("/", loginMiddleWare, (req, res) => {
-  const userId = req.headers["authorization"];
-
   const loggedInUser = req.user;
 
   try {

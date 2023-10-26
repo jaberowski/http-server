@@ -9,11 +9,13 @@ export const loginMiddleWare = (
   const userId = req.headers["authorization"];
 
   const loggedInUser = users.find((x) => x.id === userId);
+
   if (!loggedInUser) {
     res.status(401).send({ message: "Unauthorized" });
     return;
   }
 
   req.user = loggedInUser;
+
   next();
 };

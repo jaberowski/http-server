@@ -1,7 +1,5 @@
 import { Router } from "express";
 import { v4 } from "uuid";
-import { isNonEmptyString } from "../utility/non-empty-string";
-import { HttpError } from "../utility/http-error";
 import { handleExpress } from "../utility/handle-express";
 import { loginUserDto } from "../modules/user/dto/loginUser.dto";
 import { ZodError } from "zod";
