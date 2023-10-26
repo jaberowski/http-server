@@ -1,6 +1,6 @@
 import request from "supertest";
 import { app } from "../src/api";
-import { User } from "../src/routes/user.route";
+import { User } from "../src/modules/user/model/user";
 
 export const loginAdminTest = async () => {
   const { body: user } = await request(app)

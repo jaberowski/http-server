@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { users } from "./routes/user.route";
+import { handleExpress } from "./utility/handle-express";
+import { userService } from "./dependency";
 
 export const loginMiddleWare = (
   req: Request,
@@ -8,7 +9,7 @@ export const loginMiddleWare = (
 ) => {
   const userId = req.headers["authorization"];
 
-  const loggedInUser = users.find((x) => x.id === userId);
+  const loggedInUser = userService.loginUserById(userId);
 
   if (!loggedInUser) {
     res.status(401).send({ message: "Unauthorized" });

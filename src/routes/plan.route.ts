@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { handleExpress } from "../utility/handle-express";
+import { handleExpress, parseExpress } from "../utility/handle-express";
 import { createPlanDto } from "../modules/plan/dto/create-plan.dto";
 import { ZodError, z } from "zod";
 import { loginMiddleWare } from "../login.middleware";
@@ -18,14 +18,8 @@ app.post("", loginMiddleWare, (req, res) => {
     return;
   }
 
-  try {
-    const dto = createPlanDto.parse(req.body);
-    handleExpress(res, () => planService.createPlan(dto, loggedInUser));
-  } catch (e) {
-    if (e instanceof ZodError) {
-      res.status(400).send({ message: e.errors });
-    }
-  }
+  const dto = parseExpress(res, createPlanDto, req.body);
+  handleExpress(res, () => planService.createPlan(dto, loggedInUser));
 });
 
 app.post("/:id/program", loginMiddleWare, (req, res) => {
@@ -43,7 +37,7 @@ app.post("/:id/program", loginMiddleWare, (req, res) => {
 
 app.get("/:id", (req, res) => {
   try {
-    const id = z.coerce.number().parse(req.params.id);
+    const id = parseExpress(res, z.coerce.number(), req.params.id);
     handleExpress(res, () => planService.getPlanById(id));
   } catch (e) {
     if (e instanceof ZodError) {
