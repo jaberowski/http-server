@@ -1,8 +1,18 @@
 import request from "supertest";
 import { app } from "../src/api";
 import { loginAdminTest, loginRepesentorTest } from "./utility";
+import { AppDataSource } from "../src/utility/data-source";
+import { seedUser } from "../src/utility/seed";
 
 describe("Plan", () => {
+  beforeAll(async () => {
+    await AppDataSource.initialize();
+    await seedUser();
+  });
+
+  afterAll(async () => {
+    await AppDataSource.destroy();
+  });
   describe("create", () => {
     it("should send bad request if title is empty or not provided", async () => {
       const user = await loginAdminTest();

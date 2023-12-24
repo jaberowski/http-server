@@ -1,4 +1,5 @@
 import { HttpError } from "../../utility/http-error";
+import { LoginUserDto } from "./dto/loginUser.dto";
 import { UserRepository } from "./user.repository";
 
 export class UserService {
@@ -7,16 +8,21 @@ export class UserService {
     this.userRepo = new UserRepository();
   }
 
-  loginUserByInfo(dto: { username: string; password: string }) {
-    const user = this.userRepo.findLogginedUser(dto.username, dto.password);
+  async login({ username, password }: LoginUserDto) {
+    const user = await this.userRepo.findByUsername(username);
 
-    if (user === undefined) {
+    if (user === null) {
       throw new HttpError(400, "user not found");
     }
+
+    if (user.password !== password) {
+      throw new HttpError(401, "Invalid username or password");
+    }
+
     return user;
   }
-  loginUserById(userId: string | undefined) {
-    const loggedInUser = this.userRepo.findUserById(userId);
-    return loggedInUser;
+
+  async loginById(userId: string) {
+    return this.userRepo.findById(userId);
   }
 }

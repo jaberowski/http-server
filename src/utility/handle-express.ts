@@ -1,26 +1,26 @@
-import { ZodError, ZodTypeAny } from "zod";
+// import { ZodError, ZodTypeAny } from "zod";
 import { HttpError } from "./http-error";
 import { Response } from "express";
 
-export const parseExpress = (
-  res: Response,
-  zodDto: ZodTypeAny,
-  rawData: any
-) => {
-  try {
-    const dto = zodDto.parse(rawData);
-    return dto;
-  } catch (e) {
-    if (e instanceof ZodError) {
-      res.status(400).send({ message: e.errors });
-    }
-    res.status(500).send();
-  }
-};
+// export const parseExpress = (
+//   res: Response,
+//   zodDto: ZodTypeAny,
+//   rawData: any
+// ) => {
+//   try {
+//     const dto = zodDto.parse(rawData);
+//     return dto;
+//   } catch (e) {
+//     if (e instanceof ZodError) {
+//       res.status(400).send({ message: e.errors });
+//     }
+//     res.status(500).send();
+//   }
+// };
 
-export const handleExpress = <A>(res: Response, fn: () => A) => {
+export const handleExpress = async <A>(res: Response, fn: () => Promise<A>) => {
   try {
-    const data = fn();
+    const data = await fn();
     res.status(200).send(data);
     return;
   } catch (e) {

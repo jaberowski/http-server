@@ -15,10 +15,10 @@ export class PlanService {
     this.planRepo = new PlanRepository();
   }
 
-  getPlanById(planId: number) {
-    const plan = this.planRepo.findById(planId);
+  async getPlanById(planId: number) {
+    const plan = await this.planRepo.findById(planId);
 
-    if (plan === undefined) {
+    if (!plan) {
       throw new HttpError(404, "plan not found");
     }
     return plan;
@@ -49,14 +49,14 @@ export class PlanService {
     return this.planRepo.create(plan);
   }
 
-  createProgram(
+  async createProgram(
     { planId, title, description }: CreateProgramDto,
     user: User
-  ): Program {
-    const plan = this.planRepo.findById(planId);
-    if (plan === undefined) {
-      throw new NotFoundError();
-    }
+  ): Promise<Plan> {
+    const plan = await this.planRepo.findById(planId);
+
+    if (!plan) throw new NotFoundError();
+
     if (this.canCreateProgram(user, plan)) {
       return this.planRepo.addProgram(plan, {
         userId: user.id,

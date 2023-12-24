@@ -1,25 +1,21 @@
 import { v4 } from "uuid";
 import { HttpError } from "../../utility/http-error";
 import { User } from "./model/user";
+import { DataSource, Repository } from "typeorm";
+import { UserEntity } from "./entity/user.entity";
+import { AppDataSource } from "../../utility/data-source";
 
 export class UserRepository {
-  users: User[] = [
-    { id: v4(), username: "admin", password: "admin", role: "Admin" },
-    { id: v4(), username: "rep", password: "rep", role: "Representative" },
-  ];
-
-  public findLogginedUser(username: string, password: string) {
-    const user = this.users.find(
-      (userItem) =>
-        userItem.username === username && userItem.password === password
-    );
-    if (user === undefined) {
-      throw new HttpError(400, "user not found");
-    }
-    return user;
+  private userRepo: Repository<UserEntity>;
+  constructor() {
+    this.userRepo = AppDataSource.getRepository(UserEntity);
   }
-  public findUserById(userId: string | undefined) {
-    const loggedInUser = this.users.find((x) => x.id === userId);
-    return loggedInUser;
+
+  findByUsername(username: string): Promise<User | null> {
+    return this.userRepo.findOneBy({ username });
+  }
+
+  public findById(userId: string) {
+    return this.userRepo.findOneBy({ id: userId });
   }
 }

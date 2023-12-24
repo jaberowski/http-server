@@ -5,8 +5,9 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { UserRole } from "../model/user";
 
-@Entity()
+@Entity("users")
 export class UserEntity {
   @PrimaryColumn()
   id!: string;
@@ -16,6 +17,9 @@ export class UserEntity {
 
   @Column()
   password!: string;
+
+  @Column()
+  role!: UserRole;
 
   @CreateDateColumn()
   createAt!: Date;
