@@ -6,11 +6,12 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { UserRole } from "../model/user";
+import { UserId } from "../model/user-id";
 
 @Entity("users")
 export class UserEntity {
   @PrimaryColumn()
-  id!: string;
+  id!: UserId;
 
   @Column()
   username!: string;

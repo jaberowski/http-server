@@ -10,14 +10,16 @@ import {
 } from "typeorm";
 import { ProgramEntity } from "../program/entity/program.entity";
 import { UserEntity } from "../../user/entity/user.entity";
+import { NonEmptyString } from "../../../data/non-empty-string";
+import { PlanId } from "../model/plan-id";
 
 @Entity("plans")
 export class PlanEntity {
   @PrimaryGeneratedColumn()
-  id!: number;
+  id!: PlanId;
 
   @Column()
-  title!: string;
+  title!: NonEmptyString;
 
   @Column()
   description!: string;

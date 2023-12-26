@@ -1,21 +1,27 @@
+import { isFutureDate } from "../../data/future-date";
+import { NonEmptyString } from "../../data/non-empty-string";
 import {
   ForbiddenError,
   HttpError,
   NotFoundError,
 } from "../../utility/http-error";
-import { User } from "../user/model/user";
-import { Plan } from "./model/plan";
-import { CreatePlan, PlanRepository } from "./plan.repository";
+import {
+  User,
+  UserRepresentative,
+  isAdminUser,
+  isRepresentative,
+} from "../user/model/user";
+import { FuturePlan, Plan, isFuturePlan } from "./model/plan";
+import { PlanId } from "./model/plan-id";
+import { CreatePlan, IPlanRepository, PlanRepository } from "./plan.repository";
 import { CreateProgramDto } from "./program/dto/create-program.dto";
+import { CreateProgram } from "./program/model/create-program";
 import { Program } from "./program/model/program";
 
 export class PlanService {
-  private planRepo: PlanRepository;
-  constructor() {
-    this.planRepo = new PlanRepository();
-  }
+  constructor(private planRepo: IPlanRepository) {}
 
-  async getPlanById(planId: number) {
+  async getPlanById(planId: PlanId) {
     const plan = await this.planRepo.findById(planId);
 
     if (!plan) {
@@ -26,25 +32,27 @@ export class PlanService {
 
   createPlan(
     dto: {
-      title: string;
+      title: NonEmptyString;
       description?: string;
       deadLine: Date;
     },
     loggedInUser: User
   ) {
-    const plan: CreatePlan = {
-      title: dto.title,
-      description: dto.description || "",
-      deadLine: dto.deadLine,
-      programs: [],
-    };
-
-    if (dto.deadLine.getTime() < new Date().getTime()) {
+    if (!isFutureDate(dto.deadLine)) {
       throw new HttpError(400, "dead line should be in the future");
     }
-    if (loggedInUser.role !== "Admin") {
+    if (!isAdminUser(loggedInUser)) {
       throw new HttpError(403, "you are not authorized");
     }
+    const plan: CreatePlan = {
+      user: loggedInUser,
+      data: {
+        title: dto.title,
+        description: dto.description || "",
+        deadLine: dto.deadLine,
+        programs: [],
+      },
+    };
 
     return this.planRepo.create(plan);
   }
@@ -57,32 +65,25 @@ export class PlanService {
 
     if (!plan) throw new NotFoundError();
 
-    if (this.canCreateProgram(user, plan)) {
-      return this.planRepo.addProgram(plan, {
-        userId: user.id,
-        description: description || "",
-        title: title,
-      });
-    } else {
-      throw new HttpError(400, "program is not valid");
-    }
-  }
-
-  canCreateProgram(user: User, plan: Plan) {
-    if (user.role !== "Representative") {
+    if (!isRepresentative(user)) {
       throw new ForbiddenError();
     }
+    if (!isFuturePlan(plan)) {
+      throw new HttpError(400, "plan is in the past");
+    }
 
-    const existingProgram = plan.programs.find(
-      (programItem) => programItem.userId === user.id
+    const createProgram = CreateProgram.create(
+      user,
+      {
+        title,
+        description: description || "",
+      },
+      plan
     );
 
-    if (existingProgram) {
-      return false;
+    if (!createProgram) {
+      throw new HttpError(400, "this user have another plan");
     }
-    if (plan.deadLine.getTime() < new Date().getTime()) {
-      return false;
-    }
-    return true;
+    return this.planRepo.addProgram(createProgram);
   }
 }

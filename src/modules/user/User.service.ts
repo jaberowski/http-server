@@ -1,12 +1,10 @@
 import { HttpError } from "../../utility/http-error";
 import { LoginUserDto } from "./dto/loginUser.dto";
+import { UserId } from "./model/user-id";
 import { UserRepository } from "./user.repository";
 
 export class UserService {
-  private userRepo: UserRepository;
-  constructor() {
-    this.userRepo = new UserRepository();
-  }
+  constructor(private userRepo: UserRepository) {}
 
   async login({ username, password }: LoginUserDto) {
     const user = await this.userRepo.findByUsername(username);
@@ -22,7 +20,7 @@ export class UserService {
     return user;
   }
 
-  async loginById(userId: string) {
+  async loginById(userId: UserId) {
     return this.userRepo.findById(userId);
   }
 }

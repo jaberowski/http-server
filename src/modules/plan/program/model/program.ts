@@ -1,7 +1,12 @@
+import { NonEmptyString } from "../../../../data/non-empty-string";
+import { UserId } from "../../../user/model/user-id";
+import { PlanId } from "../../model/plan-id";
+import { ProgramId } from "./program-id";
+
 export interface Program {
-  planId: number;
-  title: string;
+  planId: PlanId;
+  title: NonEmptyString;
   description?: string;
-  id: number;
-  userId: string;
+  id: ProgramId;
+  userId: UserId;
 }

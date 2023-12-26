@@ -1,13 +1,14 @@
+import { Express } from "express";
 import request from "supertest";
-import { app } from "../src/api";
 import { loginAdminTest, loginRepesentorTest } from "./utility";
 import { AppDataSource } from "../src/utility/data-source";
-import { seedUser } from "../src/utility/seed";
+import { makeApp } from "../src/api";
 
 describe("Plan", () => {
+  let app: Express;
   beforeAll(async () => {
-    await AppDataSource.initialize();
-    await seedUser();
+    const dataSource = await AppDataSource.initialize();
+    app = makeApp(dataSource);
   });
 
   afterAll(async () => {
@@ -15,7 +16,7 @@ describe("Plan", () => {
   });
   describe("create", () => {
     it("should send bad request if title is empty or not provided", async () => {
-      const user = await loginAdminTest();
+      const user = await loginAdminTest(app);
       await request(app)
         .post("/plan")
         .set("Authorization", user.id)
@@ -34,7 +35,7 @@ describe("Plan", () => {
     });
 
     it("should fail if user is not admin", async () => {
-      const user = await loginRepesentorTest();
+      const user = await loginRepesentorTest(app);
       const today = new Date();
       const tomorow = new Date(today.setDate(today.getDate() + 1));
       await request(app)
@@ -49,7 +50,7 @@ describe("Plan", () => {
     });
 
     it("should create a plan if we are logged in", async () => {
-      const user = await loginAdminTest();
+      const user = await loginAdminTest(app);
       const today = new Date();
       const tomorow = new Date(today.setDate(today.getDate() + 1));
       const { body: plan } = await request(app)
@@ -68,7 +69,7 @@ describe("Plan", () => {
 
   describe("read", () => {
     it("should read the plan", async () => {
-      const user = await loginAdminTest();
+      const user = await loginAdminTest(app);
       const today = new Date();
       const tomorow = new Date(today.setDate(today.getDate() + 1));
       const title = "oromie";

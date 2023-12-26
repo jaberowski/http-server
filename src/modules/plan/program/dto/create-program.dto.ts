@@ -1,9 +1,11 @@
 import { z } from "zod";
+import { zodNonEmptyString } from "../../../../data/non-empty-string";
+import { zodPlanId } from "../../model/plan-id";
 
 export const createProgramDto = z.object({
-  title: z.string().min(1),
+  title: zodNonEmptyString,
   description: z.string().optional(),
-  planId: z.coerce.number(),
+  planId: zodPlanId,
 });
 
 export type CreateProgramDto = z.infer<typeof createProgramDto>;
