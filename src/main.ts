@@ -1,6 +1,6 @@
 import { makeApp } from "./api";
 import { User } from "./modules/user/model/user";
-import { AppDataSource } from "./utility/data-source";
+import { AppDataSource } from "./data-source";
 import { seedUser } from "./utility/seed";
 
 declare global {

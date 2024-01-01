@@ -25,7 +25,10 @@ export class PlanEntity {
   description!: string;
 
   @Column()
-  deadLine!: Date;
+  deadLineProgram!: Date;
+
+  @Column()
+  deadLineVote!: Date;
 
   @OneToMany(() => ProgramEntity, (program) => program.plan, {
     cascade: ["insert"],

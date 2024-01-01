@@ -20,7 +20,8 @@ export interface CreatePlan {
   data: {
     title: NonEmptyString;
     description: string;
-    deadLine: FutureDate;
+    deadLineProgram: FutureDate;
+    deadLineVote: FutureDate;
     programs: Program[];
   };
 }

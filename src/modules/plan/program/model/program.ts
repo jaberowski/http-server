@@ -1,3 +1,4 @@
+import { WholeNumber } from "../../../../data/int";
 import { NonEmptyString } from "../../../../data/non-empty-string";
 import { UserId } from "../../../user/model/user-id";
 import { PlanId } from "../../model/plan-id";
@@ -9,4 +10,5 @@ export interface Program {
   description?: string;
   id: ProgramId;
   userId: UserId;
+  votedCount: WholeNumber;
 }

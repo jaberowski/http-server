@@ -6,13 +6,14 @@ export interface Plan {
   id: PlanId;
   title: NonEmptyString;
   description: string;
-  deadLine: Date;
+  deadLineProgram: Date;
+  deadLineVote: Date;
   programs: Program[];
 }
 
 export interface FuturePlan extends Plan {
-  deadLine: FutureDate;
+  deadLineProgram: FutureDate;
 }
 
 export const isFuturePlan = (plan: Plan): plan is FuturePlan =>
-  isFutureDate(plan.deadLine);
+  isFutureDate(plan.deadLineProgram);

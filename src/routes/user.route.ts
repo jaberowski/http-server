@@ -15,6 +15,7 @@ export const makeUserRoute = (userService: UserService) => {
       handleExpress(res, () => userService.login({ username, password }));
     } catch (e) {
       if (e instanceof ZodError) {
+        console.log(e);
         res.status(400).send({ message: e.errors });
       }
     }

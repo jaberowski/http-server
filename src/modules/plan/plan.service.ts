@@ -11,6 +11,7 @@ import {
   isAdminUser,
   isRepresentative,
 } from "../user/model/user";
+import { CreatePlanDto } from "./dto/create-plan.dto";
 import { FuturePlan, Plan, isFuturePlan } from "./model/plan";
 import { PlanId } from "./model/plan-id";
 import { CreatePlan, IPlanRepository, PlanRepository } from "./plan.repository";
@@ -30,26 +31,24 @@ export class PlanService {
     return plan;
   }
 
-  createPlan(
-    dto: {
-      title: NonEmptyString;
-      description?: string;
-      deadLine: Date;
-    },
-    loggedInUser: User
-  ) {
-    if (!isFutureDate(dto.deadLine)) {
+  createPlan(dto: CreatePlanDto, loggedInUser: User) {
+    if (!isFutureDate(dto.deadLineProgram)) {
       throw new HttpError(400, "dead line should be in the future");
     }
     if (!isAdminUser(loggedInUser)) {
       throw new HttpError(403, "you are not authorized");
     }
+    if (!isFutureDate(dto.deadLineVote)) {
+      throw new HttpError(400, "dead line should be in the future");
+    }
+
     const plan: CreatePlan = {
       user: loggedInUser,
       data: {
         title: dto.title,
         description: dto.description || "",
-        deadLine: dto.deadLine,
+        deadLineProgram: dto.deadLineProgram,
+        deadLineVote: dto.deadLineVote,
         programs: [],
       },
     };

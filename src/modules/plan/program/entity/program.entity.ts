@@ -13,6 +13,7 @@ import { NonEmptyString } from "../../../../data/non-empty-string";
 import { ProgramId } from "../model/program-id";
 import { PlanId } from "../../model/plan-id";
 import { UserId } from "../../../user/model/user-id";
+import { WholeNumber } from "../../../../data/int";
 
 @Entity("programs")
 export class ProgramEntity {
@@ -24,6 +25,9 @@ export class ProgramEntity {
 
   @Column()
   description!: string;
+
+  @Column({ default: 0 })
+  votedCount!: WholeNumber;
 
   @Column()
   planId!: PlanId;

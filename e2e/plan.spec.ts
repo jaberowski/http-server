@@ -1,7 +1,7 @@
 import { Express } from "express";
 import request from "supertest";
 import { loginAdminTest, loginRepesentorTest } from "./utility";
-import { AppDataSource } from "../src/utility/data-source";
+import { AppDataSource } from "../src/data-source";
 import { makeApp } from "../src/api";
 
 describe("Plan", () => {
@@ -38,13 +38,15 @@ describe("Plan", () => {
       const user = await loginRepesentorTest(app);
       const today = new Date();
       const tomorow = new Date(today.setDate(today.getDate() + 1));
+      const nextWeek = new Date(today.setDate(today.getDate() + 7));
       await request(app)
         .post("/plan")
         .set("Authorization", user.id)
         .send({
           description: "oromie is a nice place",
           title: "oromie",
-          deadline: tomorow,
+          deadLineProgram: tomorow,
+          deadLineVote: nextWeek,
         })
         .expect(403);
     });
@@ -53,13 +55,15 @@ describe("Plan", () => {
       const user = await loginAdminTest(app);
       const today = new Date();
       const tomorow = new Date(today.setDate(today.getDate() + 1));
+      const nextWeek = new Date(today.setDate(today.getDate() + 7));
       const { body: plan } = await request(app)
         .post("/plan")
         .set("Authorization", user.id)
         .send({
           title: "oromie",
           description: "oromie is a nice place",
-          deadLine: tomorow,
+          deadLineProgram: tomorow,
+          deadLineVote: nextWeek,
         })
         .expect(200);
 
@@ -72,6 +76,8 @@ describe("Plan", () => {
       const user = await loginAdminTest(app);
       const today = new Date();
       const tomorow = new Date(today.setDate(today.getDate() + 1));
+      const nextWeek = new Date(today.setDate(today.getDate() + 7));
+
       const title = "oromie";
       const { body: plan } = await request(app)
         .post("/plan")
@@ -79,7 +85,8 @@ describe("Plan", () => {
         .send({
           title,
           description: "oromie is a nice place",
-          deadLine: tomorow,
+          deadLineProgram: tomorow,
+          deadLineVote: nextWeek,
         })
         .expect(200);
 

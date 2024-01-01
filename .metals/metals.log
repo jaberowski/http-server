@@ -1,0 +1,6 @@
+2024.01.01 00:31:10 INFO  Started: Metals version 1.2.0 in folders '/home/jaber/code/http/http-server' for client Visual Studio Code 1.85.1.
+2024.01.01 00:31:11 WARN  Build server is not auto-connectable.
+2024.01.01 00:31:11 WARN  no build tool detected in workspace '/home/jaber/code/http/http-server'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. 
+2024.01.01 00:40:33 INFO  Shutting down server
+2024.01.01 00:40:33 INFO  shutting down Metals
+2024.01.01 00:40:35 INFO  Exiting server

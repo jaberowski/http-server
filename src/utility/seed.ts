@@ -1,5 +1,5 @@
 import { v4 } from "uuid";
-import { AppDataSource } from "./data-source";
+import { AppDataSource } from "../data-source";
 import { UserEntity } from "../modules/user/entity/user.entity";
 
 export const seedUser = async () => {
@@ -11,6 +11,12 @@ export const seedUser = async () => {
     userRepo.save([
       { id: v4(), username: "admin", password: "admin", role: "Admin" },
       { id: v4(), username: "rep", password: "rep", role: "Representative" },
+    ]);
+  }
+
+  if (count === 2) {
+    userRepo.save([
+      { id: v4(), username: "normal", password: "normal", role: "Normal" },
     ]);
   }
 };

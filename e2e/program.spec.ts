@@ -1,7 +1,7 @@
 import { Express } from "express";
 import request from "supertest";
 import { loginAdminTest } from "./utility";
-import { AppDataSource } from "../src/utility/data-source";
+import { AppDataSource } from "../src/data-source";
 import { seedUser } from "../src/utility/seed";
 import { makeApp } from "../src/api";
 
@@ -21,13 +21,15 @@ describe("Program", () => {
       const adminUser = await loginAdminTest(app);
       const today = new Date();
       const tomorrow = new Date(today.setDate(today.getDate() + 1));
+      const nextWeek = new Date(today.setDate(today.getDate() + 7));
       const { body: plan } = await request(app)
         .post("/plan")
         .set("Authorization", adminUser.id)
         .send({
           title: "oromie",
           description: "oromie is a nice place",
-          deadLine: tomorrow,
+          deadLineProgram: tomorrow,
+          deadLineVote: nextWeek,
         })
         .expect(200);
 
@@ -38,21 +40,22 @@ describe("Program", () => {
       const adminUser = await loginAdminTest(app);
       const today = new Date();
       const tomorrow = new Date(today.setDate(today.getDate() + 1));
+      const nextWeek = new Date(today.setDate(today.getDate() + 7));
       const { body: plan } = await request(app)
         .post("/plan")
         .set("Authorization", adminUser.id)
         .send({
           title: "oromie",
           description: "oromie is a nice place",
-          deadLine: tomorrow,
+          deadLineProgram: tomorrow,
+          deadLineVote: nextWeek,
         })
         .expect(200);
       await request(app)
         .post(`/plan/${plan.id}/program`)
         .set("authorization", adminUser.id)
         .send({ title: "" })
-        .expect(400)
-        .send({ message: "bad request" });
+        .expect(400);
     });
   });
 });

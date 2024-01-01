@@ -8,6 +8,8 @@ import { UserService } from "./modules/user/User.service";
 import { PlanRepository } from "./modules/plan/plan.repository";
 import { DataSource } from "typeorm";
 import { UserRepository } from "./modules/user/user.repository";
+import { VoteRepository } from "./modules/plan/vote/vote.repository";
+import { VoteService } from "./modules/plan/vote/vote.service";
 
 export const makeApp = (dataSource: DataSource) => {
   const app = express();
@@ -25,7 +27,10 @@ export const makeApp = (dataSource: DataSource) => {
   const planService = new PlanService(planRepo);
   const userService = new UserService(UserRepo);
 
-  app.use("/plan", makePlanRoute(planService, userService));
+  const voteRepo = new VoteRepository(dataSource);
+  const voteService = new VoteService(voteRepo, planService);
+
+  app.use("/plan", makePlanRoute(planService, userService, voteService));
   app.use(makeUserRoute(userService));
 
   app.use((req, res) => {
